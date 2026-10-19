@@ -1,0 +1,898 @@
+{
+  "_readme": "Every number the air-purifier analysis depends on, in one place. Edit here, then run: python3 run.py (writes airbox_results.xlsx and airbox_report.md). Sources are listed in SOURCES.md. Dates are read dates. Anything marked ASSUMPTION is unsourced and should be checked.",
+  "electricity_rate_usd_per_kwh": 0.1635,
+  "hours_per_year": 8760,
+  "years": 5,
+  "controller_usd": 14.99,
+  "controller_watts": 1.0,
+  "tape_usd": 5.0,
+  "build_factor": 0.85,
+  "merv13_dp_model": "nukit: dp_inwc = 4.73e-7*v^2 + 3.38e-4*v, v in fpm",
+  "media_sqft_per_face_sqft_by_depth": {
+    "1": 1.0,
+    "2": 2.14,
+    "4": 2.97
+  },
+  "dp_area_factor_by_depth": {
+    "1": 1.0,
+    "2": 1.76,
+    "4": 1.76
+  },
+  "_dp_area_note": "2026-09-16: the Nukit MERV 13 polynomial (filterboxbuilder.com methodology) takes airflow over an EFFECTIVE media area that grows with pleat depth, up to 1.8x; the tool had applied it to the nominal face for every depth. Factor solved from FilterBoxBuilder's own readings (read 2026-09-16, four sides, 8 x Arctic P14 PWM PST): 20x20x1 CADR 340, 20x20x2 372 (+9.4%), 20x25x1 354; through this tool's fan curve the 2 inch result needs the face velocity divided by 1.76 (push-back 0.55x). The 20x25x1 / 20x20x1 ratio (1.041 there, 1.042 here) and the implied catch (0.862 there, 0.85 here) agree, so the two tools' 1 inch physics match. 4 inch gets the same factor: the Nordic Pure guide rates its standard MERV 13 at 0.33 in. w.g. (2 inch) and 0.34 (4 inch) at 500 fpm, no lower for the deeper pleat, and FilterBoxBuilder caps at 1.8x. ASSUMPTION for 4 inch; 2 inch is fitted.",
+  "_media_note": "Multipliers relative to a 1 inch pleat of the same face (not sq ft of media per sq ft of face): AAF PREpleat 2 inch 2.26 to 2.28x, Koch 2.00x, mean 2.14; 4 inch AAF 2.79 to 3.00, Koch 3.03, mean 2.97. Actual media per face is 1.9 to 2.3 sq ft per sq ft for 1 inch.",
+  "filter_life": {
+    "_readme": "Live model: continuous electret decay, catch(t) = floor + (new - floor) * exp(-t/tau), swap interval optimised for five-year dollars per average delivered cfm (see decay._readme). Keys prefixed _legacy_ belong to the retired models A (time) and B (mass) and are not read by the code.",
+    "_legacy_readme": "Two models. A (time): electret charge fades with months in service; CADR(t) = new * (1 - a*t). B (mass): end of life when deposited mass per sq ft of media reaches m_end. Both anchored to in-situ studies listed below.",
+    "scenarios_ug_per_m3_indoor_with_cleaner_running": {
+      "average": 8,
+      "poor": 20,
+      "smoke_month": 28
+    },
+    "_scenario_anchors": "Indoor PM2.5 with the cleaner running, which is what loads the filter. Average 8: RIOPA nonsmoking homes 14.4 median without a cleaner, reduced about 40% by one cleaner. Poor 20: Semple 2015 smoking homes median 31, same reduction. Smoke month 28: May, Dixon, Jaffe 2021, the Seattle home running a MERV 13 box fan during the September 2020 smoke (uncleaned homes were 40 to 73). Corrected 2026-09-07: the earlier 45 exceeded every with-cleaner value in the source.",
+    "decay": {
+      "_readme": "Continuous decay: catch(t) = floor + (new - floor) * exp(-t/tau). tau_ref_months per scenario is for Rosenthal's reference box (four 20x20x2 at about 500 cfm) expressed in the model's media units: 4 x 2.78 face sq ft x 2.14 = 23.8 units at 500 cfm = 0.0476 per cfm (v10 stored the note's own arithmetic, was rounded to 0.047; corrected 2026-09-07: was 0.10, stated in true media sq ft, which the code does not use). tau for a build = tau_ref * (media units per cfm / 0.047) ^ s, s = 0 means life does not depend on media area (scenario still sets tau), s = 1 means proportional. The optimizer picks the swap interval that minimises dollars per average delivered cfm; no fixed end of life.",
+      "_floor_anchor": "Mechanical efficiency left after the charge is gone: Huang and Boor 2026 MERV 13 electret E1 fell to 27% (from 72%), and ASHRAE 52.2 Appendix J conditioning cuts electret MERV 13 to about MERV 11 levels; 0.25 / 0.60 = 0.42 of the new smoke-class catch.",
+      "_tau_anchors": "average: 65% of new at 10 months (Tex-Air 24/7 offices 63%, Pistochini 62 to 75% at 9 months); poor: 70% at 3 months (Rosenthal, Clean Air Crew smoke-season guidance); smoke month: 70% at 2 months (Rosenthal heavy smoke).",
+      "media_per_cfm_ref_sqft": 0.0476,
+      "sensitivity_exponents": [
+        0,
+        0.5,
+        1
+      ],
+      "sensitivity_default": 0.5,
+      "_sensitivity_note": "0.5 is the midpoint between pure time (0) and pure loading (1); the Summary sheet also shows both extremes for the top candidates.",
+      "_legacy_floor_fraction_of_new": 0.42,
+      "_legacy_tau_ref_months": {
+        "average": 10.8,
+        "poor": 4.1,
+        "smoke_month": 2.75
+      },
+      "swap_cap_sensitivity_months": [
+        24,
+        36
+      ],
+      "_swap_cap_note": "2026-09-07: the headline rows optimise to no swap inside five years, which is the boundary of the search. airbox_report.md therefore also prints each headline build with the swap forced to at most 24 and 36 months.",
+      "_anchor_review": "2026-09-07: the two 'average' anchors are on different clocks and channels. Pistochini 2024 ran 9 h/day for 40 weeks (2,520 h; 62 to 75% of new at 0.35 to 1 um), which on the model's 24/7 clock is 3.45 months, implying tau about 3.2. Tex-Air's 10-month 24/7 box (a five-filter box, three 20x20x2 plus two 16x20x2) reads 63% of new at 0.5 um but 73% on the 0.3 to 1 um composite the catch parameter is defined on, implying tau about 16. The two bracket 10.8; a least-squares fit of this model to Tex-Air's five points with the floor held at 0.42 gives tau 9.0. The headline filter depth (2 inch vs 1 inch) is decided by under 1% and flips at tau 9.0 or at s = 0, so the depth is not a robust claim; the DIY-vs-appliance ranking survives every value in the bracket.",
+      "_floor_note": "2026-09-07: the floor 0.42 was derived as 0.25 / 0.60 against the retired catch 0.60; kept as a relative floor, it now asserts discharged media catches 0.36 (0.42 x 0.85) at box velocity, which no source measures directly. Corroboration: Tex-Air's Blue Heaven ASHRAE 52.2 tests of a field MERV 11 give Appendix J E1 11% vs new 27% (0.41); Huang and Boor's 72% to 27% is 0.375; Rosenthal (Jan 2026) finds used CR-box MERV 13 filters test at MERV-A 10. The 'no swap inside five years' result holds for every tau from 3.3 to 20 months at floor 0.42, and flips to a 30-month swap when the relative floor drops below 0.376. The conclusion rests on the floor, and the two anchors sit one on each side of the flip.",
+      "_s_exponent_note": "2026-09-07: physics of loading-driven charge decay gives s = 1 (time to a given mass per media area scales with area per cfm); 0.5 is a hedge toward pure time decay. At s = 0 the 1 inch filter wins every cap by about 1%; at 0.5 and 1 the 2 inch wins by about 1%. Not a robust number.",
+      "_huang_boor_2026_read": "Read 2026-09-08 from the source documents (see SOURCES.md): Huang and Boor 2026, Building and Environment 301, 114596. MERV 13 electret 8-pocket bag (24x24x30 in, 81 sq ft media, synthetic microfibers), outdoor air at 2,000 cfm (500 fpm face, 24.7 fpm media velocity, 0.0405 sq ft media per cfm), 112 weeks, mean RH 64.5%. E1 (0.3 to 1 um): 72% at week 2, 60 at week 5, 44 at week 11, 34 at week 20, 31 at 6 months, about 27 at 1 year, minimum 23 at week 68, recovering to 33 at 2 years as a dust cake formed (in-situ MERV 13 to 10 to 11). Pressure drop rose only about 30% in two years. Mass gain 164 g on 81 sq ft (2.0 g per sq ft). Outdoor mass not stated; the size distributions integrate to about 5 to 6 ug/m3 and the instruments under-read the gravimetric gain by 53%, so the effective loading is nearer 10 ug/m3. Fitting the model's form to weeks 5 to 20 gives tau about 2.2 to 2.8 months in that rig; scaled to the tau reference box's media per cfm (2.5x more) and to 8 ug/m3, about 5 to 8 months. Relative floor: 0.375 at one year, 0.32 at the minimum, 0.46 at two years. Consequences: (1) tau anchors now read 3.2 (Pistochini, 9 h/day), 5 to 8 (Huang, AHU duct outdoors), 16 (Tex-Air, 0.3 to 1 um composite); 10.8 kept, sitting above the middle; (2) the floor 0.42 is above Huang's first-year value (0.375, exactly the 'no swap' flip) and its minimum (0.32); the model's exponential form cannot show Huang's year-two recovery, which partly offsets that. Treat 'no swap in five years' and 'one swap at about 30 months' as the same answer inside the evidence."
+    },
+    "_legacy_end_of_life_fraction_of_new_cadr": 0.7,
+    "_legacy_model_A_decay_per_month": {
+      "average": 0.035,
+      "poor": 0.1,
+      "smoke_month": 0.15
+    },
+    "_legacy_model_A_anchors": "Tex-Air 20x20x2 boxes in offices, 0.5 um single pass 67% new, 58 at 2 mo, 49 at 4, 51 at 6, 42 at 10 (63% of new at 10 mo); Pistochini 2024, 2 inch MERV 13 box-fan boxes 9 h/day 40 weeks, CADR 62 to 75% of new; Rosenthal: home 6 months minimum, classroom 6 to 10, heavy wildfire smoke about 2 months; Clean Air Crew: 6 months, 3 in smoke season; Huang and Boor 2026 AHU bag filter 72 to 27% E1 in year 1 (high velocity, not a box).",
+    "_legacy_model_B_mass_end_g_per_sqft_media": 0.4,
+    "_legacy_model_B_anchors": "Pistochini 2024: about 4.8 g estimated deposited on four 2 inch filters (about 50 sq ft media, 0.1 g per sq ft, 9 h/day, 40 weeks) gave 62% of new; Rosenthal 10 month 24/7 boxes at roughly 0.4 to 0.5 g per sq ft (D, estimated from 5 ug/m3 and box-fan airflow) still at 63 to 72%; Huang and Boor AHU bag filter 2 g per sq ft over two years, 38% of new by year 1. End of life (70%) sits between 0.1 and 0.5 g per sq ft; 0.4 chosen from the only 24/7 box data (Rosenthal). No long-term data exists for a two-filter PC-fan box.",
+    "_legacy_mass_catch_fraction": 0.8
+  },
+  "filters": {
+    "_readme": "name: [width_in, height_in, depth_in, usd_per_filter, type, source]. Prices read 2026-09-07 unless noted.",
+    "16x25x1 MERV13": [
+      16,
+      25,
+      1,
+      9.75,
+      "MERV13",
+      "Nordic Pure 12-pack"
+    ],
+    "16x25x2 MERV13": [
+      16,
+      25,
+      2,
+      13.33,
+      "MERV13",
+      "Nordic Pure 12-pack"
+    ],
+    "16x25x4 MERV13": [
+      16,
+      25,
+      4,
+      26.67,
+      "MERV13",
+      "Nordic Pure 6-pack"
+    ],
+    "20x20x1 MERV13": [
+      20,
+      20,
+      1,
+      9.75,
+      "MERV13",
+      "Nordic Pure 12-pack"
+    ],
+    "20x20x2 MERV13": [
+      20,
+      20,
+      2,
+      14.17,
+      "MERV13",
+      "Nordic Pure 12-pack"
+    ],
+    "20x20x4 MERV13": [
+      20,
+      20,
+      4,
+      26.67,
+      "MERV13",
+      "Nordic Pure 6-pack"
+    ],
+    "20x25x1 MERV13": [
+      20,
+      25,
+      1,
+      10.83,
+      "MERV13",
+      "Nordic Pure 12-pack"
+    ],
+    "20x25x2 MERV13": [
+      20,
+      25,
+      2,
+      15.0,
+      "MERV13",
+      "Nordic Pure 12-pack at Lowe's, $15.00 each (read 2026-09-07 in a browser; nordicpure.com 3-pack $16.16 each; Amazon $23.33 each; Uline 12-pack $8.50 each, brand and MERV rating not confirmed)"
+    ],
+    "20x25x4 MERV13": [
+      20,
+      25,
+      4,
+      28.33,
+      "MERV13",
+      "Nordic Pure 6-pack"
+    ],
+    "24x24x1 MERV13": [
+      24,
+      24,
+      1,
+      13.33,
+      "MERV13",
+      "Nordic Pure 6-pack"
+    ],
+    "24x24x2 MERV13": [
+      24,
+      24,
+      2,
+      20.0,
+      "MERV13",
+      "Nordic Pure 3-pack"
+    ],
+    "16x25x1 Filtrete 1900 (reference box)": [
+      16,
+      25,
+      1,
+      15.19,
+      "MERV13",
+      "Amazon Jan 2026, two 2-packs $60.74"
+    ],
+    "16x25x1 MERV11": [
+      16,
+      25,
+      1,
+      10.94,
+      "MERV11",
+      "Filtrete 1000 2-pack, Walmart"
+    ],
+    "20x25x1 MERV11": [
+      20,
+      25,
+      1,
+      9.33,
+      "MERV11",
+      "Filtrete 1000 6-pack, Walmart"
+    ],
+    "20x25x2 MERV11": [
+      20,
+      25,
+      2,
+      13.97,
+      "MERV11",
+      "Filtrete 1000, Lowe's"
+    ],
+    "20x20x2 MERV11": [
+      20,
+      20,
+      2,
+      13.97,
+      "MERV11",
+      "Filtrete 1000, Lowe's"
+    ],
+    "16x25x1 MERV16": [
+      16,
+      25,
+      1,
+      22.5,
+      "MERV16",
+      "Nordic Pure store 6-pack $134.99, 2026-09-07"
+    ],
+    "20x25x1 MERV16": [
+      20,
+      25,
+      1,
+      24.17,
+      "MERV16",
+      "Nordic Pure store 6-pack $144.99, 2026-09-07"
+    ],
+    "11.4x11.4x1 H11 panel": [
+      11.4,
+      11.4,
+      1,
+      14.25,
+      "H11_panel",
+      "AirFanta 3Pro replacement set, $57 for 4"
+    ]
+  },
+  "appliances": {
+    "_readme": "name: [price_usd, quiet_watts, quiet_cadr_cfm, filters_usd_per_year, quiet_db_3ft, note]. Quiet speed = fastest speed HouseFresh measured under 45 dB at 3 ft (exception: the box-fan CR box has no speed under 45 dB and is shown at speed 3). The price includes the first filter set; yearly filters are billed four more times over five years. 2026-09-07: CADR is no longer held constant; average CADR over each yearly filter = new CADR x appliance_loading_derate (see that key); rows listed in appliance_options may override the number of later filter sets billed or, for an electret-media appliance, use the tool's own electret decay instead of the HEPA derate. Watts are held constant (loading lowers both airflow and watts, so the electricity is slightly overstated late in life, partly cancelling on $/cfm).",
+    "Coway AP-1512HH": [
+      239.99,
+      9.0,
+      119,
+      22.0,
+      44.4,
+      "51% proxy x 233.6 (ionizer on; speed 2 was never re-run with it off, so no ionizer-off ratio exists); watts 9.0 = HouseFresh speed 2 with the ionizer on (2026-09-07: was 8.7, the ionizer-off figure): the 51% is HouseFresh's PM1 clear-time ratio (26 min at speed 3 vs 51 at speed 2) applied to the AHAM smoke CADR, two methods mixed; filter set $22 at Lowe's, in stock (read 2026-09-07; CONFIRM OEM vs generic and that it is 1 HEPA + 2 carbon; OEM AP-1512HH-FP was $54.99 at Home Depot earlier); $239.99 on cowaymega.com 2026-09-07"
+    ],
+    "Blue Pure 211+ (discontinued; HouseFresh data)": [
+      349.99,
+      16.9,
+      140,
+      69.99,
+      37.2,
+      "2026-09-07: quiet speed 1 (speed 2 is 45.8 dB): 37.2 dB, 16.9 W; CADR 140 is HouseFresh's own stated speed-1 figure (was 156 from a 44% clear-time proxy x 350). 211+ is a dead SKU; price shown is the successor 211i Max list price $349.99 on blueair.com 2026-09-07 (2026-09-07: the $262.49 read earlier was a Labor Day sale; list prices are used for every row), which has no independent per-speed test, so this row is the 211+'s performance at the Max's price. Ionizer cannot be disabled (HouseFresh: 62% performance drop without it). Filter $69.99 every 6 months (v10: billed per filter, 9 bought after the one in the box = 10 in five years; the earlier yearly $139.98 x 4 paid for only 8)."
+    ],
+    "Dyson TP07": [
+      649.99,
+      4.9,
+      58,
+      28.0,
+      44.9,
+      "HouseFresh measured (sub-45 dBA PM1 CADR 58 cfm at 44.9 dB, 4.9 W; filter $79.99 a year; generics $35 to 40). 2026-09-07: dyson.com TP07 page resolves at $649.99, currently out of stock (superseded by the TP11); Best Buy $649.99, no longer available new. Filters: read 2026-09-07, $28 on Amazon in stock (generic; OEM $79.99), used here."
+    ],
+    "IQAir HealthPro Plus XE": [
+      1199.99,
+      47.3,
+      86,
+      151.33,
+      40.9,
+      "2026-09-07: filters $151.32 a year at IQAir's own store prices and stated lives (PreMax F8 $80 per 18 months (read 2026-09-07; 3-pack bundle $236), V5-Cell $99.99 per 2 years, HyperHEPA $199.99 per 50 months; was $203 on a $155.78 PreMax price that is not IQAir's). v10: the five-year bill counts the parts bought inside 60 months at those lives, PreMax at 18, 36, 54 months ($240), V5-Cell at 24, 48 ($199.98), HyperHEPA at 50 ($199.99) = $639.97 (appliance_options later_filters_usd), not 4 x the yearly $151.33 ($605.32); the yearly figure stays for display. IQAir's filter lives are stated at 10 h/day on speed 3; on this tool's 24/7 basis they would be about 2.4x shorter (about $363 a year), which is not applied to any other appliance either, so the manufacturer basis is used and the caveat stated. HouseFresh reviewed the HealthPro Plus 250; the XE is the same machine with an app; dB 40.9 / 47.3 W at speed 3 confirmed."
+    ],
+    "Box-fan CR box, speed 3": [
+      59.37,
+      46.7,
+      198,
+      35.99,
+      60.7,
+      "HouseFresh hardware data (198 cfm PM1, 46.7 W, 60.7 dB at speed 3, no quiet setting). Read 2026-09-07: Lasko 20 in box fan $23.37 Walmart plus Aerostar 20x20x1 MERV 13 4-pack $35.99 Target = $59.37 to build, $35.99 a year of filters (HouseFresh had $85 and $60.32). 2026-09-07: electret MERV 13 media, so it gets the tool's own electret decay (12-month swap, face 11.1 sq ft, airflow 274 cfm implied), not the HEPA loading derate."
+    ],
+    "AirFanta 3Pro, speed 6.54 V": [
+      164.99,
+      9.0,
+      213,
+      57,
+      43.3,
+      "HouseFresh measured PM1 CADR at 6.54 V; four H11 panels $57 a set counted yearly (HouseFresh: filter life 6 to 12 months); in stock on air-fanta.com at $164.99 2026-09-07 (2026-09-07: the earlier 'sold out' note was wrong)"
+    ],
+    "Winix 5510 new, OEM Filter Q": [
+      180.0,
+      6.58,
+      125,
+      79.99,
+      40.8,
+      "Read 2026-09-07: $180 at Walmart. 2026-09-07: HouseFresh's own 5510 review replaces the 5500-2 proxy: speeds 35.2 / 36.8 / 40.8 / 51.6 / 67.2 dB and 3.51 / 4.59 / 6.58 / 15.68 / 52.62 W, so quiet speed is 2 (speed 3 is over 45 dB); sub-45 dBA PM1 CADR 125 cfm (HouseFresh); (earlier reads: Home Depot $200, winixamerica.com $259.99); takes Filter Q 1712-0123-00 $79.99, not Filter H. Generic Filter Q row dropped: no readable price found."
+    ],
+    "Winix C545 refurbished, OEM Filter S": [
+      99.99,
+      10.15,
+      118,
+      59.99,
+      43.1,
+      "the unit the Reference Box was compared against; winixamerica.com refurb C545 $99.99 (out of stock 2026-09-07, 1-year warranty, includes one year of filters); C545 speed 3 measured 43.1 dB, 10.15 W by HouseFresh (2026-09-07: was 9.1 W, the 5500-2's); CADR 118 is a proxy (51% clear-time ratio x 232) because HouseFresh tested the C545 at top speed only (26 min); Huang 2024 measured the twin C535 at 110 cfm woodsmoke CADR at speed 2 (39.2 dB), so 118 at speed 3 is plausible; Filter S $59.99 (1 HEPA + 4 carbon)"
+    ],
+    "Winix C545 refurbished, generic filters": [
+      99.99,
+      10.15,
+      118,
+      27.99,
+      43.1,
+      "Read 2026-09-07: generic Filter S set $27.99 on Amazon (4 HEPA + 4 carbon). Winix's cadence is 1 HEPA a year and a carbon every 3 months, so one set a year covers the carbon and leaves spare HEPAs; billed at $27.99 a year. No independent efficiency test of any generic Winix filter exists."
+    ],
+    "Nukit Tempest Pro, stock fans (vendor lab CADR, not HouseFresh)": [
+      385.95,
+      10.0,
+      222,
+      32.39,
+      37.0,
+      "2026-09-07: vendor page: 'independent lab measured CADR is 222 CFM at 37 dBA' with Filtrete MPR 1900 filters; watts not published (10 W assumed from the P14 build, ASSUMPTION); two 20x25x1 Nordic Pure MERV 13 a year at the pack price ($32.39, filter_packs; v10: was $21.66, two legacy single prices, and the row wrongly assumed a first set in the box, so five sets are now billed via appliance_options) but MERV 13 electret decay applies (appliance_options), not the HEPA derate; the only row whose CADR and dB come from the vendor's own lab test rather than HouseFresh or AHAM"
+    ],
+    "Winix C545 new (Target $159.99), OEM Filter S": [
+      159.99,
+      10.15,
+      118,
+      59.99,
+      43.1,
+      "Read 2026-09-07: $159.99 at Target, in stock. winixamerica.com C545 page: 'Includes 2 Full Sets of Filters, up to 2 years of filtration', so only three later sets are billed (appliance_options)."
+    ],
+    "Winix 5510 new, generic Filter Q": [
+      180.0,
+      6.58,
+      125,
+      13.0,
+      40.8,
+      "Read 2026-09-07: generic Filter Q $26 on Amazon for 2 HEPA + 2 carbon, i.e. two yearly sets, $13 a year; hardware data as the OEM row; no independent efficiency test"
+    ]
+  },
+  "noise": {
+    "_readme": "Fan noise comes from the Cybenetics chamber (one fan) plus 10 log N. Appliances are HouseFresh readings at 3 ft in a room. The offset converts the fan-bench sum to an estimated 3 ft in-room reading.",
+    "bench_to_3ft_offset_db": 2.0,
+    "_offset_anchor": "ONE anchor: Nukit Tempest, six Arctic P14 at full speed, bench sum 31.9 + 10 log 6 = 39.7 dBA, HouseFresh measured 41.8 dB at 3 ft, so 2.1, rounded to 2. ASSUMPTION with one anchor. The Efficienado Reference Box recording gives a second check on the same scale only for that box (the NF-P12 has no Cybenetics entry). 2026-09-07: indoors past the critical distance the level is roughly flat with distance (HouseFresh 41.8 dB at 3 ft on the Tempest, two 20x20x2 with mesh guards fitted, and Tex-Air 42 dB at 6 ft on a six-P14 cube of four 20x20x2: same fans and speed, different boxes, so the distance check is indirect), so 10 log(units) stacking is kept and no distance correction is applied.",
+    "caps_db_3ft": [
+      30,
+      35,
+      40,
+      45,
+      50
+    ],
+    "reference_box_measured_2026-09-07": {
+      "method": "Recorder at 3 ft, same gain, A-weighted in code; anchored by the Winix C545 recorded at speeds 1 to 4 against HouseFresh's 36.1 / 39.2 / 43.1 / 59.2 dB; offset from speeds 2 and 3 (89.1 dB), speeds 1 and 4 give 90.5 and 91.8, so about plus or minus 1.5 dB.",
+      "room_floor_db": 24.0,
+      "box_lowest_dial_3_fans_db": 25.4,
+      "box_half_dial_db": 33.1,
+      "box_full_dial_db": 44.6,
+      "winix_recorded_dbfs": {
+        "1": -54.4,
+        "2": -49.8,
+        "3": -46.0,
+        "4": -32.6
+      },
+      "box_recorded_dbfs": {
+        "silence": -65.1,
+        "low": -63.7,
+        "half": -56.0,
+        "full": -44.5
+      },
+      "_note_2026-09-16": "2026-09-16: the controller varies voltage, not PWM, so the PWM map is gone; fans_data.py labels the Reference Box's steps as percent of full speed. The half dial is located from the fan-only levels (room floor 24.0 dB subtracted energetically: 44.6 becomes 44.56, 33.1 becomes 32.53, drop 12.0 dB), which on the 50 log fan law is 57% of full speed (was 59% from the as-read levels, labeled 51% PWM). Watts: NF-P12 redux-1700 PWM 1.08 W max (Noctua spec, confirmed 2026-09-16; was 0.95 typical). The fourth fan is the NF-A14 FLX (confirmed 2026-09-17): 68.0 cfm, 1.51 mm H2O, 19.2 dB(A), 0.96 W max per the Noctua datasheet (the rows carried the NF-A14 PWM's 82.5 cfm, 2.08 mm and 1.56 W until then; the fan's own label reads 1.19 W, matching neither). All four fans are still assumed to share the same speed fraction at each dial position.",
+      "caveat": "Segment labels inferred from the level timeline; speech peaks clipped (0 dBFS) but the steady segments are 30 dB below full scale.",
+      "_note_2026-09-07": "2026-09-07: fans_data.py now reads box_full_dial_db and box_half_dial_db from this block. The half dial is located by the 50 log fan law: 44.6 - 33.1 = 11.5 dB is 59% of full rpm, which on Noctua's PWM map (550 rpm at 20%, 1700 at 100%) is 51% PWM, so the measured half-dial point is the 51% step (the earlier build put it at the 60% step, 12% too much airflow). Only the 51% and 100% steps are measured; the other steps are the fan law from 44.6 dB."
+    }
+  },
+  "filter_types": {
+    "_readme": "Media types. catch = single-pass smoke-class (0.3 to 1 um) catch of the MEDIA when new (a lab or datasheet number; box leakage is the separate build factor 0.85). decay: floor = fraction of new catch left when the charge is gone; tau_ref_months per scenario for a box with the reference media-per-cfm; s = media-sensitivity exponent (0: filter life does not depend on the box's media area, 1: proportional to media area per cfm). dp: push-back model, Pa at face velocity v fpm; the Nukit MERV 13 polynomial is near linear below 100 fpm (local exponent 1.04 to 1.09, the viscous regime expected at box velocity) and gives 0.144 in. w.g. at 300 fpm against Nordic Pure's rated 0.26; a velocity^1.7 extrapolation of the rating meets it only between about 80 and 115 fpm and is half of it at 30 fpm (v10 corrected the earlier 'within 10% below 100 fpm' claim). The absolute push-back at 20 to 60 fpm is therefore uncertain by about 2x, which is +5.6% or -7.8% on the headline airflow; the seven-box validation absorbs the level. The depth dependence is in dp_area_factor_by_depth. max_swap_months caps the optimizer where loading (rising resistance) is not modeled: 12 for H11 panels (AirFanta says 6 to 12); electret grades carry null (no cap, the optimizer searches the whole five years).",
+    "MERV13": {
+      "catch": 0.85,
+      "decay": {
+        "floor": 0.42,
+        "tau_ref_months": {
+          "average": 10.8,
+          "poor": 4.1,
+          "smoke_month": 2.75
+        }
+      },
+      "dp": "nukit",
+      "label": "MERV 13 electret pleat (Nordic Pure, Filtrete 1900)",
+      "notes": "2026-09-07: catch 0.85 (range 0.78 to 0.90) from the seven-box validation; was 0.60 (Tex-Air single pass at 665 fpm, ten times box velocity). Decay anchors are listed in SOURCES.md; the floor stays 0.42 of new (relative fraction, unchanged). Read 2026-09-08 from the source documents (see SOURCES.md): Nordic Pure's guide rates the standard pleated MERV 13 (the product priced here) at 50 to 75% for 0.3 to 1 um at 300 fpm, 0.26 in. w.g.; their Tru Mini Pleat MERV 13 at 85% at 295 fpm, 0.24 in. w.g. The model's 0.85 is the box-velocity value from the seven-box validation (boxes run 30 to 70 fpm, a tenth of the rating velocity), not a datasheet number; the guide is consistent with a rated-velocity E1 in the 50 to 85% band.",
+      "max_swap_months": null
+    },
+    "MERV11": {
+      "catch": 0.85,
+      "decay": {
+        "floor": 0.42,
+        "tau_ref_months": {
+          "average": 10.8,
+          "poor": 4.1,
+          "smoke_month": 2.75
+        }
+      },
+      "dp": "nukit_x0.95",
+      "label": "MERV 11 electret pleat (Filtrete 1000/1085, Nordic Pure mini-pleat)",
+      "notes": "2026-09-07: resistance 0.95x MERV 13 (was 0.73x): Tex-Air measured Filtrete 1085 (MERV 11) at 0.20 in. w.g. and Filtrete 1900 (MERV 13) at 0.21 at 300 fpm on the same rig, 0.29 vs 0.31 at 500 fpm; the 0.73 cited a Nordic Pure guide figure that could not be found and the tool prices Filtrete MERV 11 anyway. Catch 0.85 (was 0.77): CleanAirKits' paired MPR1900 vs MPR1085 chamber tests give MERV 11 at 95 to 105% of MERV 13 CADR (0.3 to 0.7 um) in three boxes; re-solving with the tool's own airflow model and the corrected resistance gives 0.80 to 0.88 per box, mean 0.85. Same decay as MERV 13 (Tex-Air: 27% to 20% E1 in four months at AHU velocity).",
+      "max_swap_months": null
+    },
+    "MERV16": {
+      "catch": 0.96,
+      "decay": {
+        "floor": 0.42,
+        "tau_ref_months": {
+          "average": 10.8,
+          "poor": 4.1,
+          "smoke_month": 2.75
+        }
+      },
+      "dp": "nukit_x1.3",
+      "label": "MERV 16 mini-pleat 1 inch (Nordic Pure Ultra, launched Feb 2026)",
+      "notes": "Read 2026-09-08 from the source documents (see SOURCES.md): the Nordic Pure MERV Data Product Guide 2025 Q4 has no MERV 16 page; the earlier '0.33 in. w.g. at 295 fpm' was a mis-read (0.33 is the standard pleated MERV 13 at 2 inch depth and 500 fpm; 295 fpm is the Tru Mini Pleat line's rating velocity). The 1.3x resistance is therefore an ASSUMPTION with no datasheet behind it; the guide's closest same-line step is Tru Mini Pleat MERV 11 to 13 at 1.26x. The headline is insensitive to it (2x reproduces the same table). Catch 0.96: ASHRAE 52.2 requires E1 at or above 95% for MERV 16 and Nordic Pure's product page claims 96%. Charge status unstated; treated as electret (same decay as MERV 13). ",
+      "max_swap_months": null
+    },
+    "H11_panel": {
+      "catch": 0.95,
+      "decay": {
+        "floor": 1.0,
+        "tau_ref_months": {
+          "average": 10.8,
+          "poor": 4.1,
+          "smoke_month": 2.75
+        }
+      },
+      "dp": "hepa_linear",
+      "label": "H11 mini-pleat HEPA-class panel (AirFanta 3Pro replacement, 11.4x11.4x1)",
+      "notes": "Mechanical media, no charge to lose (floor 1.0; loading raises resistance instead, not modeled). Resistance: linear in velocity, 28 Pa at 100 fpm (2026-09-07: was 56, half a Camfil Megalam H13 2 inch panel; 56 implied 41 to 57% fan efficiency at AirFanta's measured 213 cfm on 9 W, and a 140 mm axial fan peaks near 20 to 25%, so the resistance is about half that; 25 to 30 bracket, 28 chosen, still an ASSUMPTION bounded by fan power). No furnace-size true HEPA panel exists at DIY prices (searched 2026-09-07). 2026-09-07: with floor 1.0 and a 12-month cap the model bills four extra panel sets and credits no CADR for them (loading is not modeled for panels), so H11 DIY rows are pessimistic; none wins a cap, so it is left as is and stated.",
+      "max_swap_months": 12
+    },
+    "_validation_2026-09-07": "2026-09-07: the model was run against seven measured PC-fan boxes (Nukit Tempest, CleanAirKits Luggable XL-7, XL Ultra, two 5-fan Luggables, Tex-Air PC cube, AirFanta 3Pro; HouseFresh, AHAM, CleanAirKits chamber, Tex-Air). With catch 0.60 it under-predicted CADR by 30 to 45% on every unit; the implied build x catch product was 0.72 to 0.81 (mean 0.77) across five boxes, so airflow is right and one scalar was low. The 0.60 came from Tex-Air's single-pass test at 665 fpm; boxes run 33 to 70 fpm, where electret and diffusion capture are both much higher, and CleanAirKits states 75 to 85% for MERV 13 in their boxes. At catch 0.85 the model predicts 0.89 to 1.01 of measured (mean 0.94). CleanAirKits' paired MPR1900 vs MPR1085 chamber tests gave MERV 11 at 95 to 105% of MERV 13 CADR in three box configurations, so MERV 11 is 0.77, not 0.27. Sources are listed in SOURCES.md."
+  },
+  "hepa_dp_pa_per_100fpm": 28.0,
+  "rooms": {
+    "_readme": "Targets for the unit-stacking comparison: cfm needed = target_each x volume / 60. Units of one option are stacked until the target is met; noise adds 10 log(units). Rooms sheet also lists, per noise cap, the cheapest option whose stacked total stays under the cap.",
+    "bedroom 11x12x9": {
+      "volume_cuft": 1188,
+      "target_each": 5
+    },
+    "living room 700 sq ft": {
+      "volume_cuft": 5600,
+      "target_each": 5
+    }
+  },
+  "enumeration": {
+    "fans_per_box": [
+      2,
+      3,
+      4,
+      6,
+      8
+    ],
+    "filters_per_box": [
+      1,
+      2,
+      4
+    ],
+    "min_cadr_cfm": 40,
+    "_note": "filters_per_box 1 = one filter with a fan plate, 2 = sandwich, 4 = cube with a cardboard bottom."
+  },
+  "kits": {
+    "_readme": "Kits are run through the same physics and decay as DIY builds; only the purchase price is the kit's, plus the first filter set and a PSU where the kit lacks one. Revised 2026-09-07.",
+    "Nukit Tempest Pro + six Arctic P14 PST upgrade": {
+      "fan": "Arctic P14 PWM PST (140)",
+      "N": 6,
+      "filter": "20x25x1 MERV13",
+      "k": 2,
+      "pwm": 100,
+      "buy": 447.93,
+      "add_psu": false,
+      "note": "2026-09-07: the Pro ships with Nukit's own custom 140 mm fans (vendor: independent lab CADR 222 cfm at 37 dBA; 248 to 299 cfm with Arctic P14 PWM fans), which have no Cybenetics curve, so the row models the P14 upgrade the vendor describes and adds six P14 PST (Amazon 5-pack $48.99 plus one Micro Center single $12.99 = $61.98, read 2026-09-07) to the $385.95 kit price (in stock on cybernightmarket.com USA 2026-09-07); takes two 20x25x1 filters (not included); PSU, controller, grills included. The stock-fan configuration (222 cfm, 37 dBA, $385.95) is quieter than anything else here and is listed as an appliance-style row for comparison."
+    }
+  },
+  "_rate_note": "Marginal $/kWh from the author's residential electricity bill, corrected 2026-09-07: every usage-scaled line incl. the two low-income lines (0.15594/kWh) times the 1.5% public purpose and 3.5% franchise fees = 0.1638; bill reconstruction with the basic charge grossed up by the same fees gives 0.1635. Earlier 0.1668 was 2% high.",
+  "_psu_note": "DIY builds need no separate power supply: the Delinx controller ($14.99) has an AC plug. Kits that exclude a PSU get psu_usd added. Read 2026-09-07: 12 V 2 A supply $7 on Amazon.",
+  "psu_usd": 7.0,
+  "_fan_stall_pa_nfp12": 27.8,
+  "_legacy_room": {
+    "sqft": 700,
+    "ceiling_ft": 8,
+    "target_each": 5,
+    "example_room_ft": [
+      11,
+      12,
+      9
+    ]
+  },
+  "_hepa_dp_note": "2026-09-07: 28 Pa per 100 fpm, linear in velocity; was 56. Bound: AirFanta 3Pro 213 cfm CADR at 8.98 W and 353 cfm at 43.2 W (HouseFresh) on four 11.4 x 11.4 in panels.",
+  "build_factor_kit": 0.9,
+  "_build_factor_note": "2026-09-07: 0.85 for a tape-and-cardboard DIY build; 0.90 for sealed commercial kits (the validation pins build x catch at about 0.77 for sealed boxes, which with catch 0.85 gives 0.91). Not separately identifiable from catch in the data; ASSUMPTION within the fit.",
+  "_legacy_catch_rate_smoke_class": 0.6,
+  "_legacy_catch_rate_range": [
+    0.5,
+    0.69
+  ],
+  "appliance_loading_derate_avg_cadr": {
+    "average": 0.95,
+    "poor": 0.95,
+    "smoke_month": 0.95
+  },
+  "_appliance_loading_note": "2026-09-07: 0.95 in every scenario (was 0.97 / 0.90 / 0.85). Huang et al. 2024 (Indoor Environments 1:100057; Winix C535, same CADR ratings as the C545) loaded filter sets with 0 / 6.3 / 17.6 / 30.3 / 46.0 g of A2 dust and measured 110 / 100 / 104 / 115 / 80 cfm at fan level 2: flat to a knee near 30 g, then a cliff. Their '30 g at 7.2 months at 14.2 ug/m3' is for continuous Turbo use (373.6 cfm); this tool runs every appliance at its quiet speed, and Huang's level-2 airflow is 161.4 cfm, 2.3x less, so the filter loads 2.3x slower than the earlier note assumed. On that basis the 30 g knee arrives at about 30 / 12 / 8.5 months for 8 / 20 / 28 ug/m3 and the 12-month average of the measured curve is 0.94 to 0.97 in every scenario, inside the measurement noise. Watts held constant (Huang: level-2 draw fell 7.4 to 6.1 W across the loading series, at most a 4% effect on any row). Corroboration only for direction and magnitude: Duill 2023, Shaughnessy 1994, Zuraimi 2017, Smart Air Sqair. One unit, one lab; a first estimate.",
+  "appliance_options": {
+    "_readme": "Per-appliance overrides. later_sets: filter sets bought after purchase inside the five years (default years - 1), in the unit the row's filters_usd figure is priced in. later_filters_usd: total dollars of filters bought inside the five years, replacing later_sets x filters_usd when the parts have different lives (IQAir). electret: {media, face_sqft, airflow_cfm, swap_months} replaces the HEPA loading derate with the tool's own electret decay for that media. sets_in_box: filter sets shipped with the unit (default 1). filter_months: the part's replacement interval, for the display column only (the yearly dollars already carry the cadence).",
+    "Box-fan CR box, speed 3": {
+      "electret": {
+        "media": "MERV13",
+        "face_sqft": 11.11,
+        "airflow_cfm": 274,
+        "swap_months": 12
+      }
+    },
+    "Nukit Tempest Pro, stock fans (vendor lab CADR, not HouseFresh)": {
+      "later_sets": 5,
+      "sets_in_box": 0,
+      "electret": {
+        "media": "MERV13",
+        "face_sqft": 6.94,
+        "airflow_cfm": 290,
+        "swap_months": 12
+      }
+    },
+    "Blue Pure 211+ (discontinued; HouseFresh data)": {
+      "filter_months": 6,
+      "later_sets": 9
+    },
+    "IQAir HealthPro Plus XE": {
+      "later_filters_usd": 639.97
+    },
+    "Winix C545 new (Target $159.99), OEM Filter S": {
+      "later_sets": 3,
+      "sets_in_box": 2
+    }
+  },
+  "_price_policy": "Price policy (2026-09-07): prices are read in a browser (Amazon, Micro Center, Lowe's, Walmart, Target, Newegg, manufacturer stores), first-party or Amazon-sold, in stock on the read date, at the pack sizes a builder would actually buy (fan_packs, filter_packs). Marketplace listings and scraped prices are excluded. The earlier MSRP rule is retired.",
+  "_enumeration_note": "2026-09-07: adding 10-fan or 5-filter builds improves the best $/cfm by 0.3 to 2%; 10 x 140 mm fans do not fit a 20 x 20 in plate in practice (a 3 x 3 grid of 5.5 in fans is 16.5 in), so the enumeration stays at 8 fans and 1 / 2 / 4 filters.",
+  "_rounding_rule": "Rounding rule: dollars to the cent and dB to one decimal in output; the model's error bands are stated alongside, not hidden by rounding.",
+  "fan_packs": {
+    "_readme": "Read 2026-09-07 (Amazon unless noted), pack-based: [count, pack price, note]. Fan cost for N fans = cheapest combination of packs that yields at least N (spares are paid for). Replaces the single price in fans_data.py where present.",
+    "Arctic P14 PWM PST (140)": [
+      [
+        1,
+        12.99,
+        "Micro Center single, in stock"
+      ],
+      [
+        5,
+        48.99,
+        "Amazon 5-pack"
+      ]
+    ],
+    "Arctic P14 Max (140)": [
+      [
+        1,
+        10.99,
+        "Amazon single, in stock"
+      ]
+    ],
+    "Arctic P12 PWM PST (120)": [
+      [
+        1,
+        11.99,
+        "Amazon single"
+      ],
+      [
+        5,
+        28.99,
+        "Amazon 5-pack"
+      ]
+    ],
+    "Arctic P14 Pro PST (140)": [
+      [
+        1,
+        7.49,
+        "Amazon single"
+      ],
+      [
+        5,
+        22.29,
+        "Amazon 5-pack (corrected 2026-09-07 from 18.09)"
+      ]
+    ],
+    "Arctic P12 Pro (120)": [
+      [
+        1,
+        6.39,
+        "Amazon single"
+      ]
+    ],
+    "Arctic P12 Max Black (120)": [
+      [
+        1,
+        17.99,
+        "Arctic MSRP, not available"
+      ]
+    ],
+    "Noctua NF-A12x25 G2 (120)": [
+      [
+        1,
+        34.95,
+        "Amazon single"
+      ],
+      [
+        2,
+        64.95,
+        "Amazon 2-pack"
+      ]
+    ],
+    "Noctua NF-A12x25 (120)": [
+      [
+        1,
+        34.95,
+        "Amazon single"
+      ]
+    ],
+    "Noctua NF-F12 (120)": [
+      [
+        1,
+        21.95,
+        "Amazon single"
+      ]
+    ],
+    "Noctua NF-A14x25 G2 (140)": [
+      [
+        1,
+        44.95,
+        "Amazon single"
+      ],
+      [
+        2,
+        84.95,
+        "Amazon 2-pack"
+      ]
+    ],
+    "Noctua NF-P14s redux-1200 (140)": [
+      [
+        1,
+        17.95,
+        "Amazon single"
+      ]
+    ],
+    "Phanteks T30-120 Advanced mode (120x30)": [
+      [
+        1,
+        39.99,
+        "Newegg single"
+      ],
+      [
+        3,
+        97.59,
+        "Newegg 3-pack"
+      ]
+    ],
+    "be quiet! Silent Wings 4 120": [
+      [
+        1,
+        24.9,
+        "Amazon single"
+      ]
+    ],
+    "be quiet! Silent Wings 4 140": [
+      [
+        1,
+        24.9,
+        "Amazon single"
+      ]
+    ],
+    "be quiet! Silent Wings 4 140 high-speed": [
+      [
+        1,
+        24.5,
+        "Amazon single"
+      ]
+    ],
+    "be quiet! Pure Wings 3 120 high-speed": [
+      [
+        1,
+        13.9,
+        "Amazon single"
+      ],
+      [
+        3,
+        32.9,
+        "Amazon 3-pack"
+      ]
+    ],
+    "be quiet! Pure Wings 3 140 high-speed": [
+      [
+        1,
+        13.9,
+        "Amazon single"
+      ],
+      [
+        3,
+        34.9,
+        "Amazon 3-pack"
+      ]
+    ],
+    "Noctua NF-P12 redux-1700 (2026-09-07 price) EST": [
+      [
+        1,
+        16.45,
+        "Amazon single"
+      ],
+      [
+        3,
+        49.35,
+        "Amazon 3-pack"
+      ]
+    ],
+    "Efficienado Reference Box layout at 2026-09-07 fan price, noise MEASURED": [
+      [
+        1,
+        16.45,
+        "Amazon single"
+      ],
+      [
+        3,
+        49.35,
+        "Amazon 3-pack"
+      ]
+    ]
+  },
+  "filter_packs": {
+    "_readme": "Read 2026-09-07 (Amazon unless noted), pack-based: [count, pack price, note]. Filter set cost for k filters = cheapest combination of packs that yields at least k, for the first set and for every later set (a 3-pack bought for a 2-filter box pays for the spare). Replaces the per-filter price in filters where present.",
+    "20x25x1 MERV13": [
+      [
+        2,
+        32.39,
+        "Amazon 2-pack"
+      ],
+      [
+        4,
+        55.99,
+        "Amazon 4-pack"
+      ]
+    ],
+    "20x25x2 MERV13": [
+      [
+        3,
+        48.99,
+        "Lowe's 3-pack"
+      ]
+    ],
+    "16x25x1 MERV13": [
+      [
+        2,
+        30.59,
+        "Amazon 2-pack"
+      ],
+      [
+        4,
+        50.87,
+        "Amazon 4-pack"
+      ]
+    ],
+    "16x25x2 MERV13": [
+      [
+        3,
+        44.99,
+        "Amazon 3-pack"
+      ]
+    ],
+    "16x25x4 MERV13": [
+      [
+        2,
+        65.99,
+        "nordicpure.com 2-pack"
+      ]
+    ],
+    "20x20x1 MERV13": [
+      [
+        2,
+        30.2,
+        "Amazon 2-pack"
+      ],
+      [
+        4,
+        52.99,
+        "Amazon 4-pack"
+      ]
+    ],
+    "20x20x2 MERV13": [
+      [
+        3,
+        46.99,
+        "nordicpure.com 3-pack"
+      ]
+    ],
+    "20x20x4 MERV13": [
+      [
+        2,
+        58.99,
+        "nordicpure.com 2-pack"
+      ]
+    ],
+    "20x25x4 MERV13": [
+      [
+        2,
+        62.99,
+        "nordicpure.com 2-pack"
+      ]
+    ],
+    "24x24x1 MERV13": [
+      [
+        2,
+        35.39,
+        "Amazon 2-pack"
+      ],
+      [
+        4,
+        58.99,
+        "nordicpure.com 4-pack"
+      ]
+    ],
+    "24x24x2 MERV13": [
+      [
+        3,
+        60.0,
+        "nordicpure.com 3-pack"
+      ]
+    ],
+    "20x25x1 MERV11": [
+      [
+        2,
+        22.99,
+        "Amazon 2-pack, Filtrete 1000"
+      ]
+    ],
+    "16x25x1 MERV11": [
+      [
+        2,
+        21.99,
+        "Amazon 2-pack, Filtrete 1000"
+      ]
+    ],
+    "20x25x2 MERV11": [
+      [
+        1,
+        13.97,
+        "Lowe's single"
+      ]
+    ],
+    "20x20x2 MERV11": [
+      [
+        1,
+        13.97,
+        "Lowe's single"
+      ]
+    ],
+    "16x25x1 Filtrete 1900 (reference box)": [
+      [
+        1,
+        15.0,
+        "Amazon single, $15 each (confirmed 2026-09-07)"
+      ]
+    ],
+    "16x25x1 MERV16": [
+      [
+        2,
+        48.51,
+        "Amazon 2-pack"
+      ],
+      [
+        4,
+        92.99,
+        "Amazon 4-pack"
+      ]
+    ],
+    "20x25x1 MERV16": [
+      [
+        2,
+        54.99,
+        "Amazon 2-pack"
+      ],
+      [
+        4,
+        99.99,
+        "nordicpure.com 4-pack"
+      ]
+    ],
+    "11.4x11.4x1 H11 panel": [
+      [
+        4,
+        57.0,
+        "air-fanta.com set of 4"
+      ]
+    ]
+  },
+  "_retired_kits": {
+    "Nukit Tempest kit (retired 2026-09-07)": "No live listing found on 2026-09-07 (USA and International pages 404, Canada listing sold out); removed from the comparison. Last modeled at $179.95 + six P14 PST + PSU + filters."
+  },
+  "controller_outputs": 4,
+  "controller_max_watts": 36.0,
+  "_controller_note": "2026-09-08: the Delinx controller ($14.99) is a 3 to 12 V variable-VOLTAGE supply (from the listing: 'DC 3V-12V continuously adjustable output', max 3 A, 36 W stated), not a PWM controller, and has 4 fan outputs. Builds with more than 4 fans either daisy-chain (Arctic PST fans carry a pass-through plug, no extra cost) or add 4-pin splitters: two 2-to-1 splitters $7 (up to 6 fans), two 3-to-1 splitters $9 (up to 8 fans), Amazon reads 2026-09-08; a second controller at $14.99 is the alternative and is never cheaper. controller_max_watts 36 W (2026-09-16): the brick is marked DC 3 V to 12 V, 3 A, no wattage; 12 V x 3 A = 36 W, and the Amazon listing says 36 W throughout (the earlier 24 W was the two-output sibling in 'similar products'). Builds whose fan draw at that step exceeds 36 W are dropped as unbuildable on this controller.",
+  "splitters": {
+    "_readme": "[fans covered, cost] for non-PST fans beyond the controller's outputs, read 2026-09-08",
+    "options": [
+      [
+        6,
+        7.0
+      ],
+      [
+        8,
+        9.0
+      ]
+    ]
+  }
+}
