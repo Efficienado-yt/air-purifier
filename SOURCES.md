@@ -36,8 +36,12 @@ Every input in `params.json` and `fans_data.py` names its source inline.  This f
 - **HouseFresh** (housefresh.com) reviews: per-speed dB at 3 ft, watts and PM1 CADR for the Winix 5510 and C545, Coway AP-1512HH, Blue Pure 211+, Dyson TP07, IQAir HealthPro Plus, AirFanta 3Pro, the box-fan Corsi-Rosenthal box and the Nukit Tempest.  The Tempest reading (41.8 dB at 3 ft) is the single anchor for the bench-to-room noise offset.
 - **AHAM** verified smoke CADR ratings, used where a quiet-speed CADR had to be scaled from a clear-time ratio.
 - **Nukit** (Tempest Pro vendor page): independent-lab CADR of 222 cfm at 37 dBA with stock fans, 248 to 299 cfm with Arctic P14 fans, kit price and contents.
-- **AirFanta** (air-fanta.com): 3Pro price and H11 panel filter life.
-- **IQAir**, **Winix**, **Coway**, **Blueair**, **Dyson** manufacturer stores: list prices, filter part numbers, stated filter lives and what ships in the box.
+- **AirFanta** (air-fanta.com): 3Pro price and H11 panel filter life; 5Pro price, filters and per-speed CADR, watts and dB (read 2026-11-02).
+- **CleanAirKits** (cleanairkits.com) store data, 2026-11-02: XL Ultra, Purifying Table, Luggable Ultra 5-fan and Triple Exhalaron prices, contents and spec tables; Intertek report 105866030CRT-006 (XL Ultra); ENERGY STAR listings (data.energystar.gov) for the XL Ultra, Luggable Ultra and Triple Exhalaron.
+- **HouseFresh** pages used for the v11 rows: quiet-air-purifiers, best-air-purifiers-in-the-uk (XL Ultra speeds 1 and 2), and the reviews of the Levoit Core 300, 400S, 600S, Vital 200S, EverestAir and Eleva 300X, Coway Airmega Mighty2, 250S and ProX, Blueair 311i Max and Blue Signature, and Alen 75i.
+- **Nukit** lab report KJ2025002347E (Guangzhou Institute of Microbiology, GB/T 18801-2022 and GB/T 4214.1-2017), linked from the Tempest Pro product page.
+- **Levoit**, **Alen** manufacturer stores and manuals, 2026-11-02: list prices, filter prices and stated replacement intervals.
+- **IQAir**, **Winix**, **Coway**, **Blueair**, **Dyson** manufacturer stores (Coway and Blueair re-read 2026-11-02): list prices, filter part numbers, stated filter lives and what ships in the box.
 
 ## Prices and hardware
 

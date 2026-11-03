@@ -121,3 +121,21 @@ Validation: the model was run against seven measured PC-fan boxes (Nukit Tempest
 - Headline: strict winner 8 x Arctic P14 Pro PST at 50% on two 20x25x2 MERV 11, 285 cfm, 33.0 dB, $93, $1.29, one swap at 30 months.  The four-filter cube on the same fans and media: 303 cfm, $120, $1.32, no swap.  Poor air $1.48, smoke month $1.51 on the two-filter build.  Appliance and kit ranking unchanged.
 
 Validation: against the same seven measured boxes the v10 model predicts 0.89 to 1.05 of measured CADR, mean about 0.97.
+
+## v11 (2026-11-02, more store-bought purifiers and a source check)
+
+- Added 23 appliance rows, each with its sources in its `params.json` note:
+  - **CleanAirKits:** Luggable XL Ultra (assembled $429 and DIY kit $299, each at full speed and with a $17.99 variable supply at HouseFresh's speed 1), Purifying Table (carries the XL Ultra's HouseFresh measurements: same fans, filters and maker specs), Luggable Ultra 5-fan (assembled and kit), Triple Exhalaron.
+  - **Coway:** Airmega Mighty2, 250S, ProX.  **Levoit:** Core 300, Core 400S, Core 600S, Vital 200S, EverestAir, Eleva 300X.  **Blueair:** Blue Pure 311i Max, Blue Signature.  **Alen:** BreatheSmart 75i.  **AirFanta:** 5Pro.
+  - **Nukit Tempest Pro:** a HouseFresh row (188 cfm, 39.1 dB, 16.44 W) beside the vendor-lab row.
+- Rule for new rows: HouseFresh's fastest speed at or under 45 dB at 3 ft wherever HouseFresh measured the unit.  Maker lab CADR only where HouseFresh has no test, labeled "maker data, noise est." in the row name.  Filter interval: the maker's stated interval (upper end of a range), else HouseFresh's, capped at 12 months.  Prices are first-party store reads on 2026-11-02, list price where a sale was running.
+- Luggable Ultra 5-fan noise: CleanAirKits' 37.5 dB + 8.2 dB (the gap between CleanAirKits' stated and HouseFresh's measured level on the XL Ultra, same fans) = 45.7 dB.  Cross-check: the model's own 5 x Arctic P12 Max on 2 x 16x25x1 MERV 13 gives 221 cfm at 45.3 dB.
+- AirFanta 5Pro: AirFanta's per-speed table at 55% (220 cfm, 10 W, 43.1 dB at 1 m, about 43.9 dB at 3 ft); no independent test yet.
+- Levoit Core 300: no quiet-speed CADR is published; 109 cfm (HouseFresh top speed) x 54 / 78 min = 75 cfm at speed 2, the same clear-time method as the Coway AP-1512HH and Winix C545 rows.
+- Nukit Tempest Pro vendor row: watts 10 -> 14.5 (Nukit's own figure, was an assumption); 3.91 -> 4.12.  The lab report (GB/T 18801-2022) measures noise averaged at 1.5 m in a semi-anechoic room, not at 3 ft in a room.
+- Coway AP-1512HH: the $22 filter set is confirmed as generic; Coway's own set is $59.79 (recorded in the note, not used).
+- `run.py`: the report's "best appliance under cap" now counts independently measured rows only (vendor-lab and maker-data rows stay in every table).  The noise-basis column names maker-data, proxy and XL Ultra-data rows.  At 40 dB the best appliance becomes the Blueair Blue Signature, $4.13 (was the Nukit vendor row).
+- Not added: Brisk Box 3- and 4-fan.  CleanAirKits lists 200 and 260 cfm at 6.15 and 8.2 W; the model, with the fan stand-in that reproduces the XL Ultra within about 5% (7 x Arctic P12 Max: 268 cfm, 44.3 dB, 12.8 W against HouseFresh's 284 cfm, 44.1 dB, 12.06 W), gives about 127 and 164 cfm at those watts, and the fans are not named.  Brisk Box Ultra: estimated noise about 56 dB, over every cap.  Luggable XL-7: discontinued in the US.
+- Source check: every row's numbers were re-collected from their sources by independent reviewers who were not shown the model's values, and every appliance row was recomputed by an independent implementation (all within 0.5%).  Corrections from that pass: Core 400S filter interval 6 -> 12 months (Levoit's manual), Core 300 6 -> 8 months (Levoit: "every 6 to 8 months"), Eleva 300X priced on the 12-month carbon filter ($29.99) rather than the 6-month one.
+- DIY results are unchanged.  Headline appliances, average air: AirFanta 3Pro $2.26, Winix 5510 on generic filters $2.35, AirFanta 5Pro $2.62 (maker data), XL Ultra DIY kit $2.69 at full speed (47.2 dB) and $2.88 at 44.1 dB; in poor air the MERV 13 kits rise to $3.42 to $4.38 while HEPA rows stay flat under the 0.95 loading derate.
+

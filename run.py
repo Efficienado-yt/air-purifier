@@ -75,7 +75,15 @@ def noise_basis(r):
     if is_reference_box(r):
         return "MEASURED 3 ft" if r["pwm"] in FANS[REF_BOX_AS_BOUGHT]["measured_steps"] else "fan law from measured full dial"
     if r["kind"] == "Appliance":
-        return "vendor lab (not HouseFresh)" if "vendor lab" in r["fan"] else "HouseFresh 3 ft"
+        if "vendor lab" in r["fan"]:
+            return "vendor lab (not HouseFresh)"
+        if "maker data" in r["fan"]:
+            return "maker lab CADR, noise estimated"
+        if "XL Ultra data" in r["fan"]:
+            return "HouseFresh 3 ft, XL Ultra measurements"
+        if "proxy" in r["fan"]:
+            return "HouseFresh times, CADR proxy"
+        return "HouseFresh 3 ft"
     return "EST (spec-sheet fan)" if r["est"] else f"bench per fan + 10 log N + {OFFSET:g} dB"
 
 
@@ -452,7 +460,9 @@ def markdown_report(builds, apps, kits):
         md.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
         for cap in CAPS:
             d = best_diy(builds, sc, cap)
-            a = sorted([x for x in apps[sc] if x["db"] <= cap], key=lambda r: r["ppc"])
+            # best appliance: independently measured rows only (vendor-lab and maker-data rows stay in the tables)
+            a = sorted([x for x in apps[sc] if x["db"] <= cap and "vendor lab" not in x["fan"] and "maker data" not in x["fan"]],
+                       key=lambda r: r["ppc"])
             kk = sorted([x for x in kits[sc] if x["db"] <= cap], key=lambda r: r["ppc"])
             h = [x for x in reference_box_rows(builds[sc], cap) if x["fan"] == REF_BOX_AS_BOUGHT]
             ht = [x for x in reference_box_rows(builds[sc], cap) if x["fan"] == REF_BOX_TODAY]

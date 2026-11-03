@@ -231,7 +231,7 @@
       119,
       22.0,
       44.4,
-      "51% proxy x 233.6 (ionizer on; speed 2 was never re-run with it off, so no ionizer-off ratio exists); watts 9.0 = HouseFresh speed 2 with the ionizer on (2026-09-07: was 8.7, the ionizer-off figure): the 51% is HouseFresh's PM1 clear-time ratio (26 min at speed 3 vs 51 at speed 2) applied to the AHAM smoke CADR, two methods mixed; filter set $22 at Lowe's, in stock (read 2026-09-07; CONFIRM OEM vs generic and that it is 1 HEPA + 2 carbon; OEM AP-1512HH-FP was $54.99 at Home Depot earlier); $239.99 on cowaymega.com 2026-09-07"
+      "51% proxy x 233.6 (ionizer on; speed 2 was never re-run with it off, so no ionizer-off ratio exists); watts 9.0 = HouseFresh speed 2 with the ionizer on (2026-09-07: was 8.7, the ionizer-off figure): the 51% is HouseFresh's PM1 clear-time ratio (26 min at speed 3 vs 51 at speed 2) applied to the AHAM smoke CADR, two methods mixed; filter set $22 at Lowe's, in stock (read 2026-09-07; confirmed 2026-11-02 as generic Amazon filters; Coway's own Fresh Starter set is $59.79 on cowaymega.com 2026-11-02, carbon every 6 months and HEPA yearly per Coway); $239.99 on cowaymega.com 2026-09-07"
     ],
     "Blue Pure 211+ (discontinued; HouseFresh data)": [
       349.99,
@@ -299,11 +299,11 @@
     ],
     "Nukit Tempest Pro, stock fans (vendor lab CADR, not HouseFresh)": [
       385.95,
-      10.0,
+      14.5,
       222,
       32.39,
       37.0,
-      "2026-09-07: vendor page: 'independent lab measured CADR is 222 CFM at 37 dBA' with Filtrete MPR 1900 filters; watts not published (10 W assumed from the P14 build, ASSUMPTION); two 20x25x1 Nordic Pure MERV 13 a year at the pack price ($32.39, filter_packs; v10: was $21.66, two legacy single prices, and the row wrongly assumed a first set in the box, so five sets are now billed via appliance_options) but MERV 13 electret decay applies (appliance_options), not the HEPA derate; the only row whose CADR and dB come from the vendor's own lab test rather than HouseFresh or AHAM"
+      "2026-09-07: vendor page: 'independent lab measured CADR is 222 CFM at 37 dBA' with Filtrete MPR 1900 filters; watts not published (10 W assumed from the P14 build, ASSUMPTION); two 20x25x1 Nordic Pure MERV 13 a year at the pack price ($32.39, filter_packs; v10: was $21.66, two legacy single prices, and the row wrongly assumed a first set in the box, so five sets are now billed via appliance_options) but MERV 13 electret decay applies (appliance_options), not the HEPA derate; the only row whose CADR and dB come from the vendor's own lab test rather than HouseFresh or AHAM Update 2026-11-02: watts 14.5, Nukit's own stated figure (was the 10 W assumption). Lab report read 2026-11-02: KJ2025002347E, Guangzhou Institute of Microbiology, GB/T 18801-2022, 378.2 m3/h (223 cfm) at 37.0 dB(A) sound pressure averaged over a 1.5 m hemisphere in a semi-anechoic room (GB/T 4214.1), so the dB is not a 3 ft room figure; filters not named in the report."
     ],
     "Winix C545 new (Target $159.99), OEM Filter S": [
       159.99,
@@ -320,6 +320,190 @@
       13.0,
       40.8,
       "Read 2026-09-07: generic Filter Q $26 on Amazon for 2 HEPA + 2 carbon, i.e. two yearly sets, $13 a year; hardware data as the OEM row; no independent efficiency test"
+    ],
+    "CleanAirKits Luggable XL Ultra assembled, full speed": [
+      429.0,
+      16.43,
+      315,
+      32.39,
+      47.2,
+      "HouseFresh measured the XL Ultra at top speed (its stock single-speed power supply): PM1 CADR 315 cfm (535 m3/h), 47.2 dB at 3 ft, 16.43 W (best-air-purifiers-in-the-uk spec table). Lab: ENERGY STAR smoke 333 / dust 402. Prices read 2026-11-02 on cleanairkits.com (Shopify store data): XL Ultra kit $299 without filters, assembled UL507 $429 with its two filters (Confirmed 2026-11-02). Filters billed at the 20x25x1 MERV 13 Amazon 2-pack $32.39 (filter_packs; CleanAirKits' own Filtrete MPR 1900 pair is $71). CleanAirKits: replace every 6 to 12 months; billed yearly. MERV 13 electret decay as the Tempest Pro rows."
+    ],
+    "CleanAirKits Luggable XL Ultra assembled + variable supply, speed 1": [
+      446.99,
+      12.06,
+      284,
+      32.39,
+      44.1,
+      "HouseFresh speed 1 (needs a 3-12 V 3 A variable power supply, sold separately; CleanAirKits sells none): 284 cfm (482 m3/h), 44.1 dB at 3 ft, 12.06 W (quiet-air-purifiers summary table and UK spec table; two HouseFresh tables show 260 cfm, which is the XL-7's row copied). Supply priced at $17.99, Amazon 'Overall Pick' 3-24 V 3 A adjustable adapter read 2026-11-02 (set it no higher than 12 V). Prices read 2026-11-02 on cleanairkits.com (Shopify store data): XL Ultra kit $299 without filters, assembled UL507 $429 with its two filters (Confirmed 2026-11-02). Filters billed at the 20x25x1 MERV 13 Amazon 2-pack $32.39 (filter_packs; CleanAirKits' own Filtrete MPR 1900 pair is $71). CleanAirKits: replace every 6 to 12 months; billed yearly. MERV 13 electret decay as the Tempest Pro rows."
+    ],
+    "CleanAirKits Luggable XL Ultra DIY kit, full speed": [
+      299.0,
+      16.43,
+      315,
+      32.39,
+      47.2,
+      "HouseFresh measured the XL Ultra at top speed (its stock single-speed power supply): PM1 CADR 315 cfm (535 m3/h), 47.2 dB at 3 ft, 16.43 W (best-air-purifiers-in-the-uk spec table). Lab: ENERGY STAR smoke 333 / dust 402. Kit ships without filters, so five sets are billed. Prices read 2026-11-02 on cleanairkits.com (Shopify store data): XL Ultra kit $299 without filters, assembled UL507 $429 with its two filters (Confirmed 2026-11-02). Filters billed at the 20x25x1 MERV 13 Amazon 2-pack $32.39 (filter_packs; CleanAirKits' own Filtrete MPR 1900 pair is $71). CleanAirKits: replace every 6 to 12 months; billed yearly. MERV 13 electret decay as the Tempest Pro rows."
+    ],
+    "CleanAirKits Luggable XL Ultra DIY kit + variable supply, speed 1": [
+      316.99,
+      12.06,
+      284,
+      32.39,
+      44.1,
+      "HouseFresh speed 1 (needs a 3-12 V 3 A variable power supply, sold separately; CleanAirKits sells none): 284 cfm (482 m3/h), 44.1 dB at 3 ft, 12.06 W (quiet-air-purifiers summary table and UK spec table; two HouseFresh tables show 260 cfm, which is the XL-7's row copied). Supply priced at $17.99, Amazon 'Overall Pick' 3-24 V 3 A adjustable adapter read 2026-11-02 (set it no higher than 12 V). Kit ships without filters, so five sets are billed. Prices read 2026-11-02 on cleanairkits.com (Shopify store data): XL Ultra kit $299 without filters, assembled UL507 $429 with its two filters (Confirmed 2026-11-02). Filters billed at the 20x25x1 MERV 13 Amazon 2-pack $32.39 (filter_packs; CleanAirKits' own Filtrete MPR 1900 pair is $71). CleanAirKits: replace every 6 to 12 months; billed yearly. MERV 13 electret decay as the Tempest Pro rows."
+    ],
+    "CleanAirKits Purifying Table kit, full speed (XL Ultra data)": [
+      399.0,
+      16.43,
+      315,
+      32.39,
+      47.2,
+      "Purifying Table (7-Fan) kit $399 on cleanairkits.com (2026-11-02), filters not included (five sets billed). Same seven fans and two 20x25x1 filters as the XL Ultra, and CleanAirKits lists identical specs (dust 401, smoke 333, 14 W, 39 dB), so it carries HouseFresh's XL Ultra measurements; HouseFresh has not tested the table itself. HouseFresh measured the XL Ultra at top speed (its stock single-speed power supply): PM1 CADR 315 cfm (535 m3/h), 47.2 dB at 3 ft, 16.43 W (best-air-purifiers-in-the-uk spec table). Lab: ENERGY STAR smoke 333 / dust 402."
+    ],
+    "CleanAirKits Purifying Table kit + variable supply, speed 1 (XL Ultra data)": [
+      416.99,
+      12.06,
+      284,
+      32.39,
+      44.1,
+      "Purifying Table (7-Fan) kit $399 on cleanairkits.com (2026-11-02), filters not included (five sets billed). Same seven fans and two 20x25x1 filters as the XL Ultra, and CleanAirKits lists identical specs (dust 401, smoke 333, 14 W, 39 dB), so it carries HouseFresh's XL Ultra measurements; HouseFresh has not tested the table itself. HouseFresh speed 1 (needs a 3-12 V 3 A variable power supply, sold separately; CleanAirKits sells none): 284 cfm (482 m3/h), 44.1 dB at 3 ft, 12.06 W (quiet-air-purifiers summary table and UK spec table; two HouseFresh tables show 260 cfm, which is the XL-7's row copied). Supply priced at $17.99, Amazon 'Overall Pick' 3-24 V 3 A adjustable adapter read 2026-11-02 (set it no higher than 12 V)."
+    ],
+    "CleanAirKits Luggable Ultra 5-fan assembled (maker data, noise est.)": [
+      349.0,
+      10.7,
+      231,
+      30.59,
+      45.7,
+      "MAKER DATA, NOISE ESTIMATED: no HouseFresh test. CADR = ENERGY STAR smoke 231 (dust 294, PM2.5 260); watts = CleanAirKits' 10.7 W; noise = CleanAirKits' 37.5 dB + 8.2 dB, the gap between CleanAirKits' stated 39 dB and HouseFresh's measured 47.2 dB on the XL Ultra, which uses the same fans (the Triple Exhalaron's gap is 5.5 dB, so the estimate could be about 3 dB high). Stock single-speed supply. Two 16x25x1 MERV 13 at the Amazon 2-pack $30.59 (filter_packs), yearly. Prices read 2026-11-02 on cleanairkits.com: kit $229 without filters, assembled UL507 $349 (assumed to include filters, as the XL Ultra assembled does)."
+    ],
+    "CleanAirKits Luggable Ultra 5-fan DIY kit (maker data, noise est.)": [
+      229.0,
+      10.7,
+      231,
+      30.59,
+      45.7,
+      "MAKER DATA, NOISE ESTIMATED: no HouseFresh test. CADR = ENERGY STAR smoke 231 (dust 294, PM2.5 260); watts = CleanAirKits' 10.7 W; noise = CleanAirKits' 37.5 dB + 8.2 dB, the gap between CleanAirKits' stated 39 dB and HouseFresh's measured 47.2 dB on the XL Ultra, which uses the same fans (the Triple Exhalaron's gap is 5.5 dB, so the estimate could be about 3 dB high). Stock single-speed supply. Two 16x25x1 MERV 13 at the Amazon 2-pack $30.59 (filter_packs), yearly. Prices read 2026-11-02 on cleanairkits.com: kit $229 without filters, assembled UL507 $349 (assumed to include filters, as the XL Ultra assembled does). Kit: five sets billed."
+    ],
+    "CleanAirKits Triple Exhalaron, speed 3": [
+      389.0,
+      6.0,
+      128,
+      51.0,
+      40.5,
+      "HouseFresh quiet-speed (fastest speed at or under 45 dB at 3 ft) PM1 CADR, dB and W: speed 3 (top) 128 cfm, 40.5 dB, 6 W (quiet-air-purifiers spec table; other HouseFresh pages say 131 and 120). ENERGY STAR smoke 111 / dust 120. $389 on cleanairkits.com 2026-11-02; three EPA H11 cylinders, replacement set $51 (ASSUMPTION: the $51 listing is a set of three; confirm). Interval: CleanAirKits 'as needed', HouseFresh 6 months, so 6-month sets (nine after the one in the box)."
+    ],
+    "Coway Airmega Mighty2 (AP-1512N)": [
+      269.99,
+      10.28,
+      151,
+      69.99,
+      42.6,
+      "HouseFresh quiet-speed (fastest speed at or under 45 dB at 3 ft) PM1 CADR, dB and W: speed 2, 151 cfm, 42.6 dB, 10.28 W; no ionizer. HouseFresh's #1 pick. AHAM/Coway smoke 240. Mighty2 filter $69.99, 'lasts up to 12 months', yearly. Prices read 2026-11-02 on cowaymega.com (Shopify store data)."
+    ],
+    "Coway Airmega 250S": [
+      449.0,
+      6.52,
+      91,
+      89.0,
+      36.5,
+      "HouseFresh quiet-speed (fastest speed at or under 45 dB at 3 ft) PM1 CADR, dB and W: speed 1, 91 cfm, 36.5 dB, 6.52 W (speed 2 is 50.2 dB). Coway smoke 249. Max2 filter $89, '6 - 12 months', billed yearly (upper end). Prices read 2026-11-02 on cowaymega.com (Shopify store data)."
+    ],
+    "Coway Airmega ProX": [
+      999.0,
+      26.09,
+      299,
+      199.0,
+      44.4,
+      "HouseFresh quiet-speed (fastest speed at or under 45 dB at 3 ft) PM1 CADR, dB and W: speed 2, 299 cfm, 44.4 dB, 26.09 W. Coway smoke 568 (ENERGY STAR 577). Filter set $199, '6 - 12 months', billed yearly. Prices read 2026-11-02 on cowaymega.com (Shopify store data)."
+    ],
+    "Levoit Core 400S": [
+      219.99,
+      8.51,
+      134,
+      49.99,
+      43.2,
+      "HouseFresh quiet-speed (fastest speed at or under 45 dB at 3 ft) PM1 CADR, dB and W: speed 2, 134 cfm, 43.2 dB, 8.51 W; no ionizer. Levoit smoke 231 (matches ENERGY STAR). 400S-P 3-Stage filter $49.99; Interval: Levoit's manual 'The filter should be replaced every 12 months' (verification pass 2026-11-02; HouseFresh uses 6), billed yearly. Prices read 2026-11-02 on levoit.com (Shopify store data)."
+    ],
+    "Levoit Core 600S": [
+      299.99,
+      7.46,
+      156,
+      59.99,
+      44.4,
+      "HouseFresh quiet-speed (fastest speed at or under 45 dB at 3 ft) PM1 CADR, dB and W: speed 1, 156 cfm, 44.4 dB, 7.46 W. Levoit smoke 391 (ENERGY STAR). 600S-P Original filter $59.99, 6 to 12 months (Levoit via HouseFresh), billed yearly. Prices read 2026-11-02 on levoit.com (Shopify store data)."
+    ],
+    "Levoit Vital 200S": [
+      189.99,
+      8.01,
+      128,
+      49.99,
+      41.9,
+      "HouseFresh quiet-speed (fastest speed at or under 45 dB at 3 ft) PM1 CADR, dB and W: speed 2, 128 cfm, 41.9 dB (prose says 42.5), 8.01 W. Levoit CADR 250. Vital 200S filter $49.99, 'designed to last 6-12 months', billed yearly. Unit = Vital 200S-P. Prices read 2026-11-02 on levoit.com (Shopify store data)."
+    ],
+    "Levoit EverestAir": [
+      499.99,
+      15.59,
+      205,
+      99.99,
+      43.2,
+      "HouseFresh quiet-speed (fastest speed at or under 45 dB at 3 ft) PM1 CADR, dB and W: speed 2, 205 cfm, 43.2 dB, 15.59 W. Levoit CADR 354. EverestAir-P filter $99.99, 12 to 15 months, billed yearly (cap at a year). Prices read 2026-11-02 on levoit.com (Shopify store data)."
+    ],
+    "Levoit Eleva 300X": [
+      129.99,
+      10.03,
+      115,
+      69.98,
+      44.9,
+      "HouseFresh quiet-speed (fastest speed at or under 45 dB at 3 ft) PM1 CADR, dB and W: speed 3, 115 cfm, 44.9 dB, 10.03 W. AHAM 161. Two filters: HEPA $39.99 'up to 2 years' (at 12 h a day, so billed yearly on this tool's 24/7 basis) and the carbon layer: the Pet or Smoke & Cooking carbon filter, $29.99, 'up to 12 months', is cheaper per year than the Essential ($19.99, 'up to 6 months'; manual 4-6 months), so it is used (verification pass 2026-11-02). Five-year bill: 4 HEPA x $39.99 + 4 carbon x $29.99 = $279.92; yearly display $69.98. Prices read 2026-11-02 on levoit.com (Shopify store data)."
+    ],
+    "Levoit Core 300 (CADR proxy)": [
+      99.99,
+      24.0,
+      75,
+      29.99,
+      40.5,
+      "PROXY CADR: HouseFresh gives no quiet-speed CADR, only times. Speed 2 (40.5 dB, noise table; the spec table's 45.7 looks copied from the 300S) took 78 min to clean the 728 cu ft room; top speed took 54 min with an estimated PM1 CADR of 109 cfm, so 109 x 54 / 78 = 75 cfm (the same clear-time ratio method as the Coway AP-1512HH and Winix C545 rows). 24 W at speed 2 (HouseFresh). ENERGY STAR smoke 140. List $99.99 on levoit.com 2026-11-02 (on sale at $84.99 that day; list used as with every row). Original filter $29.99; Levoit's filter page and manual: 'every 6 to 8 months' (verification pass 2026-11-02), so 8-month filters, seven after the one in the box."
+    ],
+    "Blueair Blue Pure 311i Max": [
+      229.99,
+      5.2,
+      108,
+      44.99,
+      37.0,
+      "HouseFresh quiet-speed (fastest speed at or under 45 dB at 3 ft) PM1 CADR, dB and W: speed 1, 108 cfm, 37 dB, 5.2 W (speed 2 is 47.8 dB); HEPASilent ionizer cannot be turned off, so measured with it on. Blueair smoke 283. Filter $44.99, 'up to 9 months', so 9-month filters (six after the one in the box). Prices read 2026-11-02 on blueair.com."
+    ],
+    "Blueair Blue Signature": [
+      449.99,
+      6.63,
+      229,
+      99.99,
+      40.0,
+      "HouseFresh quiet-speed (fastest speed at or under 45 dB at 3 ft) PM1 CADR, dB and W: speed 2, 229 cfm, 40 dB, 6.63 W; ionizer always on. Blueair smoke 455. Filter $99.99, 'up to 1 year', yearly. Prices read 2026-11-02 on blueair.com."
+    ],
+    "Alen BreatheSmart 75i": [
+      799.0,
+      13.27,
+      164,
+      99.0,
+      44.7,
+      "HouseFresh quiet-speed (fastest speed at or under 45 dB at 3 ft) PM1 CADR, dB and W: speed 2, 164 cfm, 44.7 dB, 13.27 W; ionizer can be switched off, HouseFresh doesn't say whether it was on. ENERGY STAR smoke 370. Essential (Pure) filter $99, 12 to 15 months, billed yearly. Prices read 2026-11-02 on alen.com."
+    ],
+    "Nukit Tempest Pro, stock fans (HouseFresh)": [
+      385.95,
+      16.44,
+      188,
+      32.39,
+      39.1,
+      "HouseFresh quiet-speed (fastest speed at or under 45 dB at 3 ft) PM1 CADR, dB and W: top speed, 188 cfm, 39.1 dB (prose says 38.1), 16.44 W (spec table on quiet-air-purifiers). Vendor lab (Guangzhou Institute of Microbiology, GB/T 18801-2022, report KJ2025002347E) measured 378.2 m3/h = 223 cfm at 37.0 dB averaged at 1.5 m in a semi-anechoic room; HouseFresh's room test is 16% lower on air. Price and filters as the vendor row (read 2026-09-07; recheck)."
+    ],
+    "AirFanta 5Pro, 55% (maker data, noise est.)": [
+      239.99,
+      10.0,
+      220,
+      59.0,
+      43.9,
+      "MAKER DATA, NOISE ESTIMATED: no HouseFresh test (listed on air-fanta.com 2026-10-11). AirFanta's per-speed table: 55% = 220 cfm smoke CADR, 10 W, 43.1 dB at 1 m; 60% = 241 cfm, 12 W, 44.4 dB; 100% = 379 cfm smoke (maker says AHAM-Verified), 40 W, 53.1 dB. Noise at 3 ft estimated as 43.1 + 0.8 dB (1 m to 0.91 m by distance); the 60% step would be about 45.2 dB, just over the 45 cap, so 55% is used. Cross-check: AirFanta's own table for the 3Pro is consistent with HouseFresh's 3Pro test (about 213 cfm at 9 W). Price $239.99 without carbon on air-fanta.com 2026-11-02 (a $40 code was offered; list used). Four E11 panels $59 a set, maker says every 12 months, billed yearly."
     ]
   },
   "noise": {
@@ -519,6 +703,105 @@
     "Winix C545 new (Target $159.99), OEM Filter S": {
       "later_sets": 3,
       "sets_in_box": 2
+    },
+    "CleanAirKits Luggable XL Ultra assembled, full speed": {
+      "electret": {
+        "media": "MERV13",
+        "face_sqft": 6.94,
+        "airflow_cfm": 411.8,
+        "swap_months": 12
+      }
+    },
+    "CleanAirKits Luggable XL Ultra assembled + variable supply, speed 1": {
+      "electret": {
+        "media": "MERV13",
+        "face_sqft": 6.94,
+        "airflow_cfm": 371.2,
+        "swap_months": 12
+      }
+    },
+    "CleanAirKits Luggable XL Ultra DIY kit, full speed": {
+      "later_sets": 5,
+      "sets_in_box": 0,
+      "electret": {
+        "media": "MERV13",
+        "face_sqft": 6.94,
+        "airflow_cfm": 411.8,
+        "swap_months": 12
+      }
+    },
+    "CleanAirKits Luggable XL Ultra DIY kit + variable supply, speed 1": {
+      "later_sets": 5,
+      "sets_in_box": 0,
+      "electret": {
+        "media": "MERV13",
+        "face_sqft": 6.94,
+        "airflow_cfm": 371.2,
+        "swap_months": 12
+      }
+    },
+    "CleanAirKits Purifying Table kit, full speed (XL Ultra data)": {
+      "later_sets": 5,
+      "sets_in_box": 0,
+      "electret": {
+        "media": "MERV13",
+        "face_sqft": 6.94,
+        "airflow_cfm": 411.8,
+        "swap_months": 12
+      }
+    },
+    "CleanAirKits Purifying Table kit + variable supply, speed 1 (XL Ultra data)": {
+      "later_sets": 5,
+      "sets_in_box": 0,
+      "electret": {
+        "media": "MERV13",
+        "face_sqft": 6.94,
+        "airflow_cfm": 371.2,
+        "swap_months": 12
+      }
+    },
+    "CleanAirKits Luggable Ultra 5-fan assembled (maker data, noise est.)": {
+      "electret": {
+        "media": "MERV13",
+        "face_sqft": 5.56,
+        "airflow_cfm": 302.0,
+        "swap_months": 12
+      }
+    },
+    "CleanAirKits Luggable Ultra 5-fan DIY kit (maker data, noise est.)": {
+      "later_sets": 5,
+      "sets_in_box": 0,
+      "electret": {
+        "media": "MERV13",
+        "face_sqft": 5.56,
+        "airflow_cfm": 302.0,
+        "swap_months": 12
+      }
+    },
+    "CleanAirKits Triple Exhalaron, speed 3": {
+      "filter_months": 6,
+      "later_sets": 9
+    },
+    "Levoit Eleva 300X": {
+      "later_filters_usd": 279.92
+    },
+    "Levoit Core 300 (CADR proxy)": {
+      "filter_months": 8,
+      "later_sets": 7
+    },
+    "Blueair Blue Pure 311i Max": {
+      "filter_months": 9,
+      "later_sets": 6
+    },
+    "Nukit Tempest Pro, stock fans (HouseFresh)": {
+      "later_sets": 5,
+      "sets_in_box": 0,
+      "electret": {
+        "media": "MERV13",
+        "face_sqft": 6.94,
+        "airflow_cfm": 245.8,
+        "swap_months": 12
+      }
     }
   },
   "_price_policy": "Price policy (2026-09-07): prices are read in a browser (Amazon, Micro Center, Lowe's, Walmart, Target, Newegg, manufacturer stores), first-party or Amazon-sold, in stock on the read date, at the pack sizes a builder would actually buy (fan_packs, filter_packs). Marketplace listings and scraped prices are excluded. The earlier MSRP rule is retired.",
@@ -894,5 +1177,6 @@
         9.0
       ]
     ]
-  }
+  },
+  "_v11_note": "v11 2026-11-02: added CleanAirKits, Coway, Levoit, Blueair, Alen rows and a HouseFresh Nukit row (see each note). Rule for new rows: HouseFresh quiet-speed data where it exists; maker lab data only for single-speed CleanAirKits boxes, with noise estimated and labeled. Filter interval: maker's stated (upper end of a range), else HouseFresh's, capped at 12 months. Prices first-party store data read 2026-11-02, list price where a sale was running. Verification pass 2026-11-02: six independent checkers re-read every source and recomputed every row; fixes applied to Core 400S and Core 300 intervals and the Eleva carbon filter; AirFanta 5Pro added as maker data; Brisk Box left out (CleanAirKits' 200/260 cfm not reproduced by the model, about 37% lower at the stated watts, fans unnamed)."
 }
